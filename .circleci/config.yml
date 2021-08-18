@@ -1,1 +1,76 @@
 version: 2.1
+
+parameters:
+  docker-engine-version:
+    type: string
+    default: "20.10.6"
+
+  aws-cli-orb-tag:
+    type: string
+    default: "2.0.3"
+
+  aws-ecr-orb-tag:
+    type: string
+    default: "7.0.0"
+
+  aws-ecs-orb-tag:
+    type: string
+    default: "2.2.1"
+
+orbs:
+  aws-cli: circleci/aws-cli@<< pipeline.parameters.aws-cli-orb-tag >>
+  aws-ecr: circleci/aws-ecr@<< pipeline.parameters.aws-ecr-orb-tag >>
+  aws-ecs: circleci/aws-ecs@<< pipeline.parameters.aws-ecs-orb-tag >>
+
+executors:
+  node-container:
+    docker:
+      - image: cimg/node:lts
+
+jobs:
+  # First, we have to build the Docker image
+  # Some things to consider:
+  # 1.  Essentially, all we're modifying is the `pg_tileserv.toml` file and
+  #     deploying a new tile server instance with the modified toml file. So
+  #     the question is how can we automate this? Do we create an .env file
+  #     in S3 and then somehow inject those values into the toml file? I
+  #     think the answer is to store the toml file in S3 and then copy it
+  #     over into the config folder. We can define an environment variable
+  #     in CircleCI that equals the name of the toml file. In this way, every
+  #     new deployment will be a matter of updating the name of the toml file.
+  build-image-for-ecr:
+    executor: node-container
+    working_directory: ~/repo
+    steps:
+      - setup_remote_docker:
+          version: << pipeline.parameters.docker-engine-version >>
+      - aws-cli/setup
+      - run:
+          name: Get Pre-Signed URL
+          command: |
+            export PATH=~/.local/bin:$PATH
+            aws s3 presign s3://centuryops/id_centuryops_github --expires-in 300 > ./pre_sign_url
+            aws s3 presign s3://centuryops/$PG_TILESERV_CONFIG_FILE --expires-in 300 > ./pre_sign_url2
+
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL # Context-specific
+          aws-access-key-id: AWS_ACCESS_KEY_ID # Project-specific
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY # Project-specific
+          dockerfile: Dockerfile.alpine
+          region: AWS_REGION # Project-specific
+          repo: '$AWS_REPO_NAME' #Context-specific
+          tag: '$CIRCLE_SHA1'
+          path: '~/repo'
+
+
+# Next, we have to push the built image to AWS ECR
+
+# Finally, we have to deploy to the ECS cluster
+
+
+workflows:
+  version: 2
+
+  Century Deploy Workflow:
+    jobs:
+      - build-image-for-ecr
