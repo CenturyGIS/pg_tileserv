@@ -53,7 +53,7 @@ jobs:
             aws s3 presign s3://centuryops/$PG_TILESERV_CONFIG_FILE --expires-in 300 > ./pre_sign_url2
 
       - run: ls ~/repo # Sanity checking the contents of the directory
-
+      - run: ls ~ # Sanity checking the contents of the root  directory
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL # Context-specific (e.g. https://<aws_account_id>.dkr.ecr.<region>.amazonaws.com)
           aws-access-key-id: AWS_ACCESS_KEY_ID # Project-specific
