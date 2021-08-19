@@ -53,9 +53,6 @@ jobs:
             aws s3 presign s3://centuryops/id_centuryops_github --expires-in 300 > ./pre_sign_url
             aws s3 presign s3://centuryops/$PG_TILESERV_CONFIG_FILE --expires-in 300 > ./pre_sign_url2
 
-      - run: ls ~/repo # Sanity checking the contents of the directory
-      - run: ls ~ # Sanity checking the contents of the root directory
-      - run: ls ~/project # Sanity checking the contents of the project directory
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL # Context-specific (e.g. https://<aws_account_id>.dkr.ecr.<region>.amazonaws.com)
           aws-access-key-id: AWS_ACCESS_KEY_ID # Project-specific
@@ -63,7 +60,7 @@ jobs:
           dockerfile: Dockerfile.alpine
           region: AWS_REGION # Project-specific
           repo: '$AWS_REPO_NAME' #Context-specific
-          tag: '$CIRCLE_SHA1'
+          tag: '$CIRCLE_SHA1,latest'
           path: '~/repo'
 
 
