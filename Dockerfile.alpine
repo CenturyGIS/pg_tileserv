@@ -26,6 +26,7 @@ RUN apk --no-cache add ca-certificates && mkdir /app
 WORKDIR /app/
 COPY --from=0 /app/pg_tileserv /app/
 COPY --from=0 /app/assets /app/assets
+COPY --from=0 /app/config /app/config
 
 # Get PG_TILESERV_CONFIG_FILE from S3 bucket
 COPY ./pre_sign_url .
