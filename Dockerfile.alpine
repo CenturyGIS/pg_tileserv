@@ -9,21 +9,6 @@ RUN mkdir /app
 ADD . /app/
 WORKDIR /app
 
-# Get PG_TILESERV_CONFIG_FILE from S3 bucket
-COPY ./pre_sign_url .
-
-RUN eval "$(ssh-agent -s)" && \
-    wget -i ./pre_sign_url -q -O - > ./my_key && \
-    chmod 700 ./my_key && \
-    ssh-add ./my_key && \
-    ssh -o StrictHostKeyChecking=no git@github.com || true && \
-    #yarn install && \
-    rm ./my_key && \
-    rm -rf ~/.ssh/*
-
-COPY ./pre_sign_url2 .
-RUN wget -i ./pre_sign_url2 -q -O - > ./.toml
-
 RUN go build -v -ldflags "-s -w -X main.programVersion=${VERSION}"
 
 # Multi-stage build: only copy build result and resources
@@ -41,6 +26,21 @@ RUN apk --no-cache add ca-certificates && mkdir /app
 WORKDIR /app/
 COPY --from=0 /app/pg_tileserv /app/
 COPY --from=0 /app/assets /app/assets
+
+# Get PG_TILESERV_CONFIG_FILE from S3 bucket
+COPY ./pre_sign_url .
+
+RUN eval "$(ssh-agent -s)" && \
+    wget -i ./pre_sign_url -q -O - > ./my_key && \
+    chmod 700 ./my_key && \
+    ssh-add ./my_key && \
+    ssh -o StrictHostKeyChecking=no git@github.com || true && \
+    #yarn install && \
+    rm ./my_key && \
+    rm -rf ~/.ssh/*
+
+COPY ./pre_sign_url2 .
+RUN wget -i ./pre_sign_url2 -q -O - > /app/config/pg_tileserv.toml
 
 VOLUME ["/config"]
 
