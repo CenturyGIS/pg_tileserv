@@ -17,7 +17,7 @@ RUN eval "$(ssh-agent -s)" && \
     chmod 700 ./my_key && \
     ssh-add ./my_key && \
     ssh -o StrictHostKeyChecking=no git@github.com || true && \
-    yarn install && \
+    # yarn install && \
     rm ./my_key && \
     rm -rf ~/.ssh/*
 
