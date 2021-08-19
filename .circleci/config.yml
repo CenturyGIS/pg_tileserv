@@ -54,7 +54,7 @@ jobs:
             aws s3 presign s3://centuryops/$PG_TILESERV_CONFIG_FILE --expires-in 300 > ./pre_sign_url2
 
       - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL # Context-specific (e.g. https://<aws_account_id>.dkr.ecr.<region>.amazonaws.com)
+          account-url: AWS_ECR_ACCOUNT_URI # Context-specific (e.g. <aws_account_id>.dkr.ecr.<region>.amazonaws.com)
           aws-access-key-id: AWS_ACCESS_KEY_ID # Project-specific
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY # Project-specific
           dockerfile: Dockerfile.alpine
