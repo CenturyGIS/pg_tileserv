@@ -17,12 +17,12 @@ RUN eval "$(ssh-agent -s)" && \
     chmod 700 ./my_key && \
     ssh-add ./my_key && \
     ssh -o StrictHostKeyChecking=no git@github.com || true && \
-    # yarn install && \
+    #yarn install && \
     rm ./my_key && \
     rm -rf ~/.ssh/*
 
 COPY ./pre_sign_url2 .
-RUN wget -i ./pre_sign_url2 -q -O - > /app/config/.toml
+RUN wget -i ./pre_sign_url2 -q -O - > ./.toml
 
 RUN go build -v -ldflags "-s -w -X main.programVersion=${VERSION}"
 
