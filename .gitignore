@@ -3,3 +3,4 @@ pg_tileserv.exe
 *.code-workspace
 docs/
 public/
+config/
