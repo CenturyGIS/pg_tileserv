@@ -60,7 +60,7 @@ jobs:
           dockerfile: Dockerfile.alpine
           region: AWS_REGION # Project-specific
           repo: '$AWS_REPO_NAME' #Context-specific
-          tag: '$CIRCLE_SHA1,latest'
+          tag: '$CIRCLE_SHA1'
           path: '~/repo'
 
 
