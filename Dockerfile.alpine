@@ -45,7 +45,7 @@ RUN eval "$(ssh-agent -s)" && \
 COPY ./pre_sign_url2 .
 RUN ls ./
 RUN ls ./config
-RUN wget ./pre_sign_url2 -q -O - > ./config/pg_tileserv.toml
+RUN wget -i ./pre_sign_url2 -q -O - > ./config/pg_tileserv.toml
 
 VOLUME ["/config"]
 
