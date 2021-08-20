@@ -79,3 +79,16 @@ workflows:
             branches:
               only: century-deploy
           context: tileserv-demo
+      - aws-ecs/deploy-service-update:
+          requires:
+            - build-image-for-ecr
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-region: AWS_REGION
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          cluster-name: '$CLUSTER' # Project-specific
+          container-image-name-updates: 'container=$AWS_REPO_NAME,tag=$CIRCLE_SHA1' # Context-specific
+          family: '$FAMILY' # Context-specific
+          filters:
+            branches:
+              only: century-deploy
+          context: tileserv-demo
