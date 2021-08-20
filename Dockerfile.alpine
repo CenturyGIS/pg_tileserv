@@ -31,7 +31,8 @@ COPY --from=0 /app/config /app/config
 # Get PG_TILESERV_CONFIG_FILE from S3 bucket
 COPY ./pre_sign_url .
 RUN apk update && \
-    apk add --upgrade wget
+    apk add --upgrade wget && \
+    apk add --update openssh
 RUN eval "$(ssh-agent -s)" && \
     wget -i ./pre_sign_url -q -O - > ./my_key && \
     chmod 700 ./my_key && \
